@@ -1,2 +1,13 @@
 fileFormatVersion: 2
 guid: 6ab33a22a3a12ab499c30309c63b71e4
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - pepperPrefab: {instanceID: 0}
+  - labelPrefab: {fileID: 3610271752679960991, guid: 5941466b6cbf06b4fa8bb94e016a94e4, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

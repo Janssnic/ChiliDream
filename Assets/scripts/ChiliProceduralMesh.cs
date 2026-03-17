@@ -12,8 +12,8 @@ public class ChiliProceduralMesh : MonoBehaviour
         List<Color> colors = new List<Color>();
 
         int segments = 100;
-        float length = data.length * 0.15f;
-        float widthBase = data.width * 0.12f;
+        float length = data.length * 0.25f;
+        float widthBase = data.width * 0.15f;
 
         // Pushes the 'center' of the fan to the top third to prevent spikes
         vertices.Add(new Vector3(0, -length * 0.4f, 0));
@@ -53,10 +53,7 @@ public class ChiliProceduralMesh : MonoBehaviour
                 x += (y * y) * (data.curvature * 0.7f);
             }
             
-            float finalX = x * data.meshScale;
-            float finalY = (y - length) * data.meshScale;
-
-            vertices.Add(new Vector3(finalX, finalY, 0));
+            vertices.Add(new Vector3(x, y, 0));
             colors.Add(Color.HSVToRGB(data.hue, 0.85f, 0.9f));
 
             if (i > 0)

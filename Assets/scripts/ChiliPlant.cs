@@ -6,26 +6,41 @@ public class ChiliPlant : MonoBehaviour
     public GameObject pepperPrefab; // Drag your Pepper Prefab here
     public ChiliData data;          // The DNA of this specific plant
 
+    public GameObject labelPrefab;
+
     [Header("Visual Settings")]
     public float thicknessMultiplier = 0.1f;
+
 
     public void GeneratePlant(ChiliData dna, Vector3 Pos)
     {
         data = dna;
-
-        // 1. Set the main object's position to the requested Pos
         transform.position = Pos;
 
-        // 2. Clear old growth 
-        // (Note: Destroying in a loop can be tricky, so we use a list or a while loop)
+        // 1. Clear old growth (This is what was deleting your labels!)
         while (transform.childCount > 0)
         {
+            // DestroyImmediate is used here to ensure the count updates instantly
             DestroyImmediate(transform.GetChild(0).gameObject);
         }
 
-        // 3. Start the recursive growth using the specific Pos provided
-        // We multiply 'up' by plantHeight to determine where the first split happens
+        // 2. Start recursive growth
         GrowBranch(Pos, Vector3.up * data.plantHeight, 0);
+
+        // 3. SPAWN LABEL LAST (So it doesn't get deleted by the loop above)
+        if (labelPrefab != null)
+        {
+            // Placing it slightly in front (Z: -1) so it doesn't clip into the stem
+            Vector3 labelPos = Pos + new Vector3(0, -0.5f, -1f);
+            GameObject labelObj = Instantiate(labelPrefab, labelPos, Quaternion.identity, transform);
+
+            // Use GetComponentInChildren if the script is on the Canvas but the text is a child
+            ChiliLabel labelScript = labelObj.GetComponent<ChiliLabel>();
+            if (labelScript != null)
+            {
+                labelScript.SetText(data);
+            }
+        }
     }
 
     void GrowBranch(Vector3 startPos, Vector3 direction, int depth)
@@ -72,7 +87,10 @@ public class ChiliPlant : MonoBehaviour
     {
         GameObject newPepper = Instantiate(pepperPrefab, pos, Quaternion.identity, this.transform);
 
-        // Use your existing procedural logic!
+        // Scale the pepper based on the plant's overall scale or a fixed ratio
+        // This ensures the pepper isn't 5x larger than the branch it sits on
+        newPepper.transform.localScale = Vector3.one * 0.5f;
+
         ChiliProceduralMesh meshScript = newPepper.GetComponent<ChiliProceduralMesh>();
         if (meshScript != null)
         {
