@@ -56,5 +56,6 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "chiliDream.sln"
+    "dotnet.defaultSolution": "chiliDream.sln",
+    "dotnet.debug.suppressInvalidDebugTypeWarning": true
 }

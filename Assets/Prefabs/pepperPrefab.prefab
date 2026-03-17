@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 5868493063464676105}
   - component: {fileID: 242198364880682076}
   m_Layer: 0
-  m_Name: Prefab
+  m_Name: pepperPrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

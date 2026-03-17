@@ -52,8 +52,11 @@ public class ChiliProceduralMesh : MonoBehaviour
                 // Curvature
                 x += (y * y) * (data.curvature * 0.7f);
             }
+            
+            float finalX = x * data.meshScale;
+            float finalY = (y - length) * data.meshScale;
 
-            vertices.Add(new Vector3(x, y - length, 0));
+            vertices.Add(new Vector3(finalX, finalY, 0));
             colors.Add(Color.HSVToRGB(data.hue, 0.85f, 0.9f));
 
             if (i > 0)
