@@ -1,5 +1,8 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
+using Random = UnityEngine.Random;
 
 [System.Serializable]
 public class ChiliData
@@ -51,6 +54,120 @@ public class ChiliData
 
         generation = gen;
         seed = (float)(new System.Random().NextDouble() * 10000.0);
+    }
+    public static string translateToBinary(float chiliData)
+    {
+        int plantGene = BitConverter.SingleToInt32Bits(chiliData);
+        string binary = Convert.ToString(plantGene, 2).PadLeft(32, '0');
+        //Debug.Log(chiliData);
+        //Debug.Log(binary);
+        return binary;
+    }
+
+    public static float translateTofloat(string chiliData)
+    {
+        int bitInt = Convert.ToInt32(chiliData, 2);
+        float restoredFloat = BitConverter.Int32BitsToSingle(bitInt);
+
+        //Debug.Log(restoredFloat);
+        return restoredFloat;
+    }
+
+    public static string DavisOrderCrossover(float dna1, float dna2)
+    {
+        int p1 = BitConverter.SingleToInt32Bits(dna1);
+        int p2 = BitConverter.SingleToInt32Bits(dna2);
+
+        int pt1 = UnityEngine.Random.Range(0, 15);
+        int pt2 = UnityEngine.Random.Range(16, 31);
+
+        int mask = (-1 >> (32 - (pt2 - pt1))) << pt1;
+
+        int childBits = (p1 & mask) | (p2 & ~mask);
+
+        string newGene = Convert.ToString(childBits, 2).PadLeft(32, '0');
+        return Mutate(newGene, 0.5f);
+    }
+
+    public static string Mutate(string dna, float mutationChance)
+    {
+
+        if (UnityEngine.Random.value > mutationChance)
+        {
+            return dna;
+        }
+
+        char[] bits = dna.ToCharArray();
+
+        int index = UnityEngine.Random.Range(9, 32);
+
+        if (bits[index] == '0')
+        {
+            bits[index] = '1';
+        }
+        else
+        {
+            bits[index] = '0';
+        }
+
+
+        return new string(bits);
+    }
+
+    public static ChiliData BinaryBreed(ChiliData pepper1, ChiliData pepper2)
+    {
+
+        //scoville gene breeding
+        string scoville = DavisOrderCrossover(pepper1.scoville, pepper2.scoville);
+        float hybridScovile = translateTofloat(scoville);
+        Debug.Log(hybridScovile);
+        //length breeding
+        string lenght = DavisOrderCrossover(pepper1.length, pepper2.length);
+        float hybridLength = translateTofloat(lenght);
+
+        string width = DavisOrderCrossover(pepper1.width, pepper2.width);
+        float hybridWidth = translateTofloat(width);
+
+        string curve = DavisOrderCrossover(pepper1.curvature, pepper2.curvature);
+        float hybridCurve = translateTofloat(curve);
+
+        string texture = DavisOrderCrossover(pepper1.surfaceTexture, pepper2.surfaceTexture);
+        float hybridTexture = translateTofloat(texture);
+
+        string hue = DavisOrderCrossover(pepper1.hue, pepper2.hue);
+        float hybridHue = translateTofloat(hue);
+
+        string height = DavisOrderCrossover(pepper1.plantHeight, pepper2.plantHeight);
+        float hybridHeight = translateTofloat(height);
+
+        string depth = DavisOrderCrossover(pepper1.maxDepth, pepper2.maxDepth);
+        float hybridDepth = translateTofloat(depth);
+
+        string angle = DavisOrderCrossover(pepper1.branchAngle, pepper2.branchAngle);
+        float hybridAngle = translateTofloat(angle);
+
+        string yield = DavisOrderCrossover(pepper1.yieldChance, pepper2.yieldChance);
+        float hybridYield = translateTofloat(yield);
+
+        string sweet = DavisOrderCrossover(pepper1.sweetness, pepper2.sweetness);
+        float hybridSweet = translateTofloat(sweet);
+
+        string smoke = DavisOrderCrossover(pepper1.smokiness, pepper2.smokiness);
+        float hybridSmoke = translateTofloat(smoke);
+
+        string bitter = DavisOrderCrossover(pepper1.bitterness, pepper2.bitterness);
+        float hybridBitter = translateTofloat(bitter);
+
+        string fruit = DavisOrderCrossover(pepper1.fruitiness, pepper2.fruitiness);
+        float hybridFruit = translateTofloat(fruit);
+
+        return new ChiliData(
+            "hybrid", hybridScovile, hybridLength, hybridWidth, hybridCurve, hybridTexture, hybridHue,
+            hybridHeight, (int)hybridDepth, hybridAngle, hybridYield,
+            hybridSweet, hybridFruit, hybridSmoke, hybridBitter,
+            1.0f, // meshScale default
+            Mathf.Max(pepper1.generation, pepper2.generation) + 1
+        );
     }
 
     public static ChiliData Breed(ChiliData p1, ChiliData p2)
@@ -113,7 +230,8 @@ public class ChiliData
         family.Add(current);
         for (int i = 0; i < generations - 1; i++)
         {
-            current = Breed(current, current);
+            current = BinaryBreed(current, current);
+            //BinaryBreed(current, current);//remove TESTING ONLY
             family.Add(current);
         }
         return family;
